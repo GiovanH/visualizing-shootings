@@ -1,0 +1,46 @@
+[
+
+	{
+		"name": "Fatalities FF",
+		"type": "scale",
+		"field": "Total Number of Guns",
+		"sizescale": false,
+		"colorscale": false
+	},
+	{
+		"name": "Fatalities FT",
+		"type": "scale",
+		"field": "Total Number of Guns",
+		"sizescale": false,
+		"colorscale": true
+	},
+	{
+		"name": "Fatalities TF",
+		"type": "scale",
+		"field": "Total Number of Guns",
+		"sizescale": true,
+		"colorscale": false
+	},
+	{
+		"name": "Fatalities TT",
+		"type": "scale",
+		"field": "Total Number of Guns",
+		"sizescale": true,
+		"colorscale": true
+	},
+	{
+		"name": "Raw",
+		"type": "raw"
+	},
+	{
+		"name": "Race",
+		"type": "autocolor",
+		"field": "Shooter Race",
+		"fieldblack": "Unknown"
+	},
+	{
+		"name": "Fatalities",
+		"type": "scale",
+		"field": "Total Number of Fatalities"
+	}
+]
