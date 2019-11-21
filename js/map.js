@@ -1,6 +1,17 @@
 var map_json = "json/Stanford_MSA_Database.geojson";
 var map_overlay_json = "json/stanford_overlay.json";
 
+var map;
+var datatypes;
+var mapdata;
+var overlay_json
+
+var datatype_to_overlays = {
+	"number": ["scale (color)", "scale (size)", "scale (size + color)"],
+	"boolean": ["autocolor"],
+	"category": ["autocolor"]
+}
+
 function sortByFrequency(array) {
     var frequency = {};
     array.forEach(function(value) { frequency[value] = 0; });
@@ -21,35 +32,60 @@ function randomChoice(choices) {
 	return choices[index];
 }
 
-function onOverlayChange(e){
-	populateMapWithData(window.map, window.mapdata, window.overlays[e.target.value])
+function onOverlayChange(e) {
+	value = document.getElementById("overlay_select").value
+	datatype = datatypes[document.getElementById("field_select").value]
+	changeMapLayer(datatype, value)
 }
 
-function populateMenu(overlays){
-	console.log("Populating menu")
-	window.overlays = overlays;
+function onFieldChange(){
+	datatype = datatypes[document.getElementById("field_select").value]
+	field = datatype["field"];
+	overlays = datatype_to_overlays[datatype["datatype"]];
 
 	overlay_select = document.getElementById("overlay_select");
+
+	node = document.getElementById("overlay_select")
+	while (node.hasChildNodes()) {
+	    node.removeChild(node.lastChild);
+	}
+
 	for(var i = 0, size = overlays.length; i < size ; i++){
 		overlay = overlays[i];
 		option = document.createElement("option");
-		option.value = i;
-		option.innerText = overlay.name
+		option.value = overlay;
+		option.innerText = overlay
 		overlay_select.appendChild(option)
+	}
+
+	onOverlayChange()
+}
+
+function populateMenu(datatypes, mapjson){
+	console.log("Populating menu")
+	window.datatypes = datatypes;
+
+	field_select = document.getElementById("field_select");
+	for(var i = 0, size = datatypes.length; i < size ; i++){
+		field = datatypes[i]["field"];
+		datatype = datatypes[i]["datatype"];
+		option = document.createElement("option");
+		option.value = i;
+		option.innerText = field
+		field_select.appendChild(option)
 
 	}
 
-	overlay_select.addEventListener("change", onOverlayChange);
-
+	onFieldChange();
 	console.log("Populated menu")
 }
 
-function makePopupContent(overlay, feature){
+function makePopupContent(overlay, field, feature){
 
-	if (overlay.type == "autocolor") {
-		return `<p>${overlay.field}: ${feature.properties[overlay.field]}</p>`
-	} else if (overlay.type == "scale") {
-		return `<p>${overlay.field}: ${feature.properties[overlay.field]}</p>`
+	if (overlay == "autocolor") {
+		return `<p>${field}: ${feature.properties[field]}</p>`
+	} else if (contains(overlay, "scale")) {
+		return `<p>${field}: ${feature.properties[field]}</p>`
 	} else {
 		return `<p>${JSON.stringify(feature.properties)}</p>`
 	} 
@@ -57,26 +93,24 @@ function makePopupContent(overlay, feature){
 
 
 activelayer = null;
-function populateMapWithData(map, mapdata, overlay){
-	console.log("Populating map")
-	window.mapdata = mapdata;
+function changeMapLayer(datatype, overlay){
 
 	if (activelayer){
 		map.removeLayer(activelayer)
 	}
 
-	if (overlay.type == "raw") {
+	if (overlay == "raw") {
 		activelayer = L.geoJSON(mapdata, {
 			onEachFeature: function (feature, layer) {
-				layer.bindPopup(makePopupContent(overlay, feature));
+				layer.bindPopup(makePopupContent(overlay, datatype["field"], feature));
 			}
 		}).addTo(map);
-	} else if (overlay.type == "autocolor") {
+	} else if (overlay == "autocolor") {
 		var encounters = []
-		key = overlay.field
+		key = datatype["field"]
 		function makeAutocolorIcon(feature, key) {
 			value = feature.properties[key]
-			if (value == overlay.fieldblack) {
+			if (value == datatype["fieldblack"]) {
 				return blackIcon
 			}
 			if (encounters.indexOf(value) == -1) {
@@ -94,11 +128,11 @@ function populateMapWithData(map, mapdata, overlay){
 				return L.marker(latlng, {icon: makeAutocolorIcon(feature, key)});
 			},
 			onEachFeature: function (feature, layer) {
-				layer.bindPopup(makePopupContent(overlay, feature));
+				layer.bindPopup(makePopupContent(overlay, datatype["field"], feature));
 			}
 		}).addTo(map);
-	} else if (overlay.type == "scale") {
-		key = overlay.field
+	} else if (contains(overlay, "scale")) {
+		key = datatype["field"]
 		function getValueList(mapdata, key) {
 			list = []
 			for (f of mapdata["features"]) {
@@ -124,13 +158,13 @@ function populateMapWithData(map, mapdata, overlay){
 					/>`
 			} else {
 				scalefactor = ((value - min_feature)/(max_feature-min_feature))
-				if (overlay.colorscale) {
+				if (contains(overlay, "color")) {
 					hue = scalefactor * 260;
 				} else {
 					hue = 0
 				}
 					 
-				if (overlay.sizescale) {
+				if (contains(overlay, "size")) {
 					sizescale = scalefactor
 				} else {
 					sizescale = 0
@@ -153,7 +187,7 @@ function populateMapWithData(map, mapdata, overlay){
 				});
 			},
 			onEachFeature: function (feature, layer) {
-				layer.bindPopup(makePopupContent(overlay, feature));
+				layer.bindPopup(makePopupContent(overlay, datatype["field"], feature));
 			}
 		}).addTo(map);
 		// activelayer = L.geoJSON(mapdata, {
@@ -184,9 +218,11 @@ function populateMapWithData(map, mapdata, overlay){
 		// 	onEachFeature: function (feature, layer) {
 		//     	// var marker = L.marker(layer.getBounds().getCenter()).addTo(dummyGroup);
   //     	// 		marker.feature = feature;
-		// 		layer.bindPopup(makePopupContent(overlay.type, feature));
+		// 		layer.bindPopup(makePopupContent(overlay, feature));
 		// 	}
 		// }).addTo(map);
+	} else {
+		console.log("No such overlay " + overlay)
 	}
 
 	console.log("Populated map")
@@ -194,8 +230,7 @@ function populateMapWithData(map, mapdata, overlay){
 
 function load(){
 	console.log("Loading")
-	var mymap = L.map('mapid').setView([40, -100], 4);
-	window.map = mymap
+	map = L.map('mapid').setView([40, -100], 4);
 
 	L.tileLayer('https://a.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		maxZoom: 18,
@@ -203,7 +238,7 @@ function load(){
 			'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
 			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
 		id: 'mapbox.streets'
-	}).addTo(mymap);
+	}).addTo(map);
 
 	$.ajax({
 	    url: map_overlay_json,
@@ -211,22 +246,24 @@ function load(){
 	    // data: data,
 	    success: function(overlayjson) {
 			console.log("Loaded overlay json")
-			populateMenu(overlayjson)
-			var overlay = overlayjson[0]
-
+			overlay_json = overlayjson
 			$.ajax({
 			    url: map_json,
 			    dataType: 'json',
 			    // data: data,
 			    success: function(mapjson) {
 					console.log("Loaded map json")
-					populateMapWithData(mymap, mapjson, overlay)
+			    	mapdata = mapjson;
+					populateMenu(overlayjson, mapjson)
 				},
 			    error: function(e) {console.log(e)}
 			});
 		},
 	    error: function(e) {console.log(e)}
 	});
+
+	document.getElementById("field_select").addEventListener("change", onFieldChange);
+	document.getElementById("overlay_select").addEventListener("change", onOverlayChange);
 	console.log("Loaded")
 }
 

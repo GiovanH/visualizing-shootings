@@ -1,46 +1,115 @@
 [
-
 	{
-		"name": "Fatalities FF",
-		"type": "scale",
-		"field": "Total Number of Guns",
-		"sizescale": false,
-		"colorscale": false
+		"field": "CaseID",
+		"datatype": "number"
 	},
 	{
-		"name": "Fatalities FT",
-		"type": "scale",
-		"field": "Total Number of Guns",
-		"sizescale": false,
-		"colorscale": true
+		"field": "Number of Civilian Fatalities",
+		"datatype": "number"
 	},
 	{
-		"name": "Fatalities TF",
-		"type": "scale",
-		"field": "Total Number of Guns",
-		"sizescale": true,
-		"colorscale": false
+		"field": "Number of Civilian Injured",
+		"datatype": "number"
 	},
 	{
-		"name": "Fatalities TT",
-		"type": "scale",
-		"field": "Total Number of Guns",
-		"sizescale": true,
-		"colorscale": true
+		"field": "Number of Enforcement Injured",
+		"datatype": "number"
 	},
 	{
-		"name": "Raw",
-		"type": "raw"
+		"field": "Total Number of Fatalities",
+		"datatype": "number"
 	},
 	{
-		"name": "Race",
-		"type": "autocolor",
+		"field": "Total Number of Victims",
+		"datatype": "number"
+	},
+	{
+		"field": "Day of Week",
+		"datatype": "category"
+	},
+	{
+		"field": "Number of shooters",
+		"datatype": "number"
+	},
+	{
+		"field": "Shooter Age(s)",
+		"datatype": "number"
+	},
+	{
+		"field": "Average Shooter Age",
+		"datatype": "number"
+	},
+	{
 		"field": "Shooter Race",
+		"datatype": "category",
 		"fieldblack": "Unknown"
 	},
 	{
-		"name": "Fatalities",
-		"type": "scale",
-		"field": "Total Number of Fatalities"
+		"field": "Shooter Sex",
+		"datatype": "category"
+	},
+	{
+		"field": "Date",
+		"datatype": "date"
+	},
+	{
+		"field": "Type of Gun - General",
+		"datatype": "category"
+	},
+	{
+		"field": "Number of Shotguns",
+		"datatype": "number"
+	},
+	{
+		"field": "Number of Rifles",
+		"datatype": "number"
+	},
+	{
+		"field": "Number of Handguns",
+		"datatype": "number"
+	},
+	{
+		"field": "Total Number of Guns",
+		"datatype": "number"
+	},
+	{
+		"field": "Number of Semi-Automatic Guns",
+		"datatype": "number"
+	},
+	{
+		"field": "Fate of Shooter at the scene",
+		"datatype": "category"
+	},
+	{
+		"field": "Fate of Shooter",
+		"datatype": "category"
+	},
+	{
+		"field": "Shooter's Cause of Death",
+		"datatype": "category"
+	},
+	{
+		"field": "School Related",
+		"datatype": "boolean"
+	},
+	{
+		"field": "Place Type",
+		"datatype": "category"
+	},
+	{
+		"field": "Relationship to Incident Location",
+		"datatype": "category"
+	},
+	{
+		"field": "Targeted Victim/s - General",
+		"datatype": "category"
+	},
+	{
+		"field": "Possible Motive - General",
+		"datatype": "category"
+	},
+	{
+		"field": "History of Mental Illness - General",
+		"datatype": "category"
 	}
 ]
